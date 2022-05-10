@@ -1,0 +1,9 @@
+body,
+article {
+    font-family: 'FZPingXianYaSongS-R-GB', '方正屏显雅宋简体', '微软雅黑';
+}
+
+kbd,
+pre > code {
+    font-family: 'Cascadia Code', 'PT mono', consolas, sans-serif;
+}

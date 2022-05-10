@@ -6,6 +6,7 @@ SET ThisToolsetRootPath=%~p1
 
 
 
+
 SET ShouldAutoExitIfNoErrors=0
 IF '%1'=='--auto-exit' (
     SET ShouldAutoExitIfNoErrors=1
@@ -49,6 +50,7 @@ GOTO 继续处理更多的参数
 :所有参数均已处理完毕
 
 @REM ECHO Inside BAT args=%args%
+
 
 
 

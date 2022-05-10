@@ -1,6 +1,6 @@
 BEGIN {
     # 关键常量集（故意置顶）
-    ${script:产生的文件应置于源文件所在的文件夹内} = $false
+    ${script:产生的文件应置于源文件所在的文件夹内} = $true
 
 
 
@@ -59,7 +59,7 @@ BEGIN {
     .  "${本工具集之存放文件夹之完整路径}\通用辅助工具集\Get-Windows用户桌面之完整路径.ps1"
     .  "${本工具集之存放文件夹之完整路径}\通用辅助工具集\Import-吴乐川从批处理命令接受文件路径之列表.ps1"
     .  "${本工具集之存放文件夹之完整路径}\通用辅助工具集\Edit-吴乐川剥去文本最外层的引号.ps1"
-    .  "${本工具集之存放文件夹之完整路径}\通用辅助工具集\Edit-吴乐川求安全的文件路径用于输出.ps1"
+    .  "${本工具集之存放文件夹之完整路径}\通用辅助工具集\Get-吴乐川求用于安全输出文件的文件路径.ps1"
     .  "${本工具集之存放文件夹之完整路径}\通用辅助工具集\Read-吴乐川询问是或否.ps1"
     .  "${本工具集之存放文件夹之完整路径}\..\专用于本机之配置.ps1"
 
@@ -90,19 +90,37 @@ BEGIN {
     Write-Host
     Write-Host
     Write-Host
-    Write-Host -No               'BAT 共传入 '
+    Write-Host -No               '批处理共传入 '
     Write-Host -No -F 'Red'      ${script:外界给出的输入文件路径之个数}
-    Write-Host                   ' 个文件路径'
+    Write-Host                   ' 个路径'
 
     Write-Host     -F 'DarkGray' '---------------------------------------------------------------------------------------'
 
     if (${script:外界给出的输入文件路径之个数} -gt 0) {
         ${script:外界给出的文件路径之列表}.ForEach({
-            $该文件路径有效 = Test-Path "$_" -PathType 'Leaf'
+            [string]$该路径之安全版本 = "$_"
+            [string]$该路径之安全版本 = "${该路径之安全版本}" -replace '([\[\]])', '`$1'
+
+            [boolean]$该文件路径有效 = Test-Path "${该路径之安全版本}" -PathType 'Leaf'
+            [boolean]$该路径有效但是是文件夹 = (-not $该文件路径有效) -and $(Test-Path "${该路径之安全版本}" -PathType 'Container')
+
             if ($该文件路径有效) {
-                Write-Host -F 'Green' "有效： '$_'"
+                Write-Host -No -F 'Green' '可以访问：'
+                Write-Host -No            "'"
+                Write-Host -No -F 'Green' "$_"
+                Write-Host                "'"
             } else {
-                Write-Host -F 'Red'   "无效： '$_'"
+                if ($该路径有效但是是文件夹) {
+                    Write-Host -No -F 'Magenta' '是文件夹：'
+                    Write-Host -No               "'"
+                    Write-Host -No -F 'Magenta' "$_"
+                    Write-Host
+                } else {
+                    Write-Host -No -F 'Red'     '不可访问：'
+                    Write-Host -No              "'"
+                    Write-Host -No -F 'Red'     "$_"
+                    Write-Host
+                }
             }
         })
     } else {
@@ -114,13 +132,26 @@ BEGIN {
 
 
 
-    [string[]]${script:外界给出的有效文件路径之列表} = ${script:外界给出的文件路径之列表}.Where{ Test-Path "$_" -PathType 'Leaf' }
+    [string[]]${script:外界给出的有效文件路径之列表} = ${script:外界给出的文件路径之列表}.Where{
+        [string]$该路径之安全版本 = "$_"
+        [string]$该路径之安全版本 = "${该路径之安全版本}" -replace '([\[\]])', '`$1'
+
+        [boolean]$该文件路径有效 = Test-Path "${该路径之安全版本}" -PathType 'Leaf'
+        $该文件路径有效
+    }
+
     [int]${script:外界给出的有效输入文件之个数} = ${script:外界给出的有效文件路径之列表}.Length
 
     if (${script:外界给出的有效输入文件之个数} -ne ${script:外界给出的输入文件路径之个数}) {
         Write-Host
-        Write-Host                   'BAT 传入的某些文件路径无效，其对应的文件不存在或不可访问。'
-        Write-Host -No               '其中有效的文件路径有 '
+        Write-Host
+        Write-Host
+        Write-Host                   '批处理传入的某些路径无效。无效的原因可能是：'
+        Write-Host                   '  - 其为文件夹之路径，而非文件之路径；'
+        Write-Host                   '  - 其指向的文件不存在；'
+        Write-Host                   '  - 其指向的文件虽然存在，但因该文件自身之状态、当前用户权限等因素影响不可访问。'
+        Write-Host
+        Write-Host -No               '传入的路径中，有效的有 '
         Write-Host -No -F 'Red'      ${script:外界给出的有效输入文件之个数}
         Write-Host                   ' 个'
 
@@ -151,6 +182,14 @@ BEGIN {
 
     if (-not ${script:产生的文件应置于源文件所在的文件夹内}) {
         if (-not (Test-Path "${script:用于放置产生的文件的默认文件夹完整路径}" -PathType 'Container')) {
+            Write-Host
+            Write-Host
+            Write-Host
+            Write-Host              '现在在桌面上创建“用于放置产生的文件的默认文件夹”，'
+            Write-Host -No          '名为 "'
+            Write-Host -No -F 'Red' "${global:位于用户桌面的_默认用于存放产生的文件的_文件夹的名称}"
+            Write-Host -No          '" 。'
+            Write-Host
             New-Item -Path "${script:用于放置产生的文件的默认文件夹完整路径}" -Type 'Directory'
         }
     }
@@ -395,7 +434,7 @@ PROCESS {
     }
 
     [boolean]$应对调两个输入源文件之用途 = Read-吴乐川询问是或否 `
-        -问题题干_或_打印问题题干的函数 ${Function:Write-题干之是否对调输入文件} `
+        -问题题干文本_或_用以打印问题题干的函数 ${Function:Write-题干之是否对调输入文件} `
         -代表_是_之界面措辞 '是的，&对调二者的用途' `
         -代表_是_之值 'd' `
         -代表_否_之界面措辞 '&不必对调，保持原状' `
@@ -430,7 +469,7 @@ PROCESS {
 
 
 
-    $输出文件之完整路径 = Edit-吴乐川求安全的文件路径用于输出 `
+    $输出文件之完整路径 = Get-吴乐川求用于安全输出文件的文件路径 `
         -期望采用的输出文件之完整路径 "${输出文件之完整路径}" `
         -要求最终采用的输出文件之完整路径不能为该列表中之任一 ${script:外界给出的有效文件路径之列表} # `
         # -同时要求磁盘尚上不存在该文件
@@ -458,7 +497,7 @@ PROCESS {
 
 
     [boolean]$已确认无误可继续 = Read-吴乐川询问是或否 `
-        -问题题干_或_打印问题题干的函数 ${Function:Write-题干甲} `
+        -问题题干文本_或_用以打印问题题干的函数 ${Function:Write-题干甲} `
         -代表_是_之值 's' `
         -代表_否_之值 'f' `
         -默认应取_是

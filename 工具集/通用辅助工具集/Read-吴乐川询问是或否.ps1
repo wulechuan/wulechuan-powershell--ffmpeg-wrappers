@@ -1,6 +1,6 @@
 function Read-吴乐川询问是或否 {
     Param (
-        $问题题干_或_打印问题题干的函数,
+        $问题题干文本_或_用以打印问题题干的函数,
 
         [PSDefaultValue(Help = 's')]
         [string] $代表_是_之值,
@@ -94,22 +94,22 @@ function Read-吴乐川询问是或否 {
 
 
 
-        # Write-Host '$问题题干_或_打印问题题干的函数.GetType(): '($问题题干_或_打印问题题干的函数.GetType())
+        # Write-Host '$问题题干文本_或_用以打印问题题干的函数.GetType(): '($问题题干文本_或_用以打印问题题干的函数.GetType())
 
-        if (-not $问题题干_或_打印问题题干的函数) {
+        if (-not $问题题干文本_或_用以打印问题题干的函数) {
 
             ${Function:打印问题题干的函数} = ${Function:Write-默认的题干打印函数}
 
-        } elseif ($问题题干_或_打印问题题干的函数.GetType() -match 'ScriptBlock') {
+        } elseif ($问题题干文本_或_用以打印问题题干的函数.GetType() -match 'ScriptBlock') {
 
-            ${Function:打印问题题干的函数} = $问题题干_或_打印问题题干的函数
+            ${Function:打印问题题干的函数} = $问题题干文本_或_用以打印问题题干的函数
 
         } else {
 
             ${Function:打印问题题干的函数} = ${Function:Write-默认的题干打印函数}
 
-            if ($问题题干_或_打印问题题干的函数.GetType() -match 'String') {
-                [string]$问题题干文本 = "$问题题干_或_打印问题题干的函数"
+            if ($问题题干文本_或_用以打印问题题干的函数.GetType() -match 'String') {
+                [string]$问题题干文本 = "$问题题干文本_或_用以打印问题题干的函数"
             }
 
         }

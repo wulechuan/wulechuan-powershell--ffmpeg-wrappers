@@ -18,3 +18,9 @@ function Edit-吴乐川剥去文本最外层的引号 {
 
     "$剥去最外层引号后的文本"
 }
+
+
+
+
+
+Export-ModuleMember -Function *

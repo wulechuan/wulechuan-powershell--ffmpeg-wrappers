@@ -164,3 +164,9 @@ function Read-吴乐川要求输入FFMPEG时间值 {
         "$用户给出的值"
     }
 }
+
+
+
+
+
+Export-ModuleMember -Function *

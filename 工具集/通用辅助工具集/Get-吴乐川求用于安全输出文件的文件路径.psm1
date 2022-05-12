@@ -76,3 +76,9 @@ function Get-吴乐川求用于安全输出文件的文件路径 {
         "${输出文件之完整路径}"
     }
 }
+
+
+
+
+
+Export-ModuleMember -Function *

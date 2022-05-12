@@ -95,3 +95,9 @@ function Expand-吴乐川从PowerShell的Args参数解析出文件路径列表 {
         $文件路径之列表
     }
 }
+
+
+
+
+
+Export-ModuleMember -Function *
